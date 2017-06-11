@@ -1,0 +1,68 @@
+##
+##	lab1(1).asm is a simple program
+##	that has sequential operations
+##        
+
+#########################################
+#					#
+#		text segment		#
+#					#
+#########################################
+
+	.text		
+.globl __start
+ 
+__start:		# execution starts here
+	la 	$a0,prompt
+	li 	$v0,4	# prints the prompt
+	syscall
+	
+	li 	$v0, 5	# reads an integer
+	syscall
+	
+	lw	$t0, word	# t0 = word
+	#li	$t1, 5		# loads the constant 5 into register $t1
+	lw	$t1, word	# loads the word stored in word into register $t1
+
+	lui	$t7, 0x1000	# large constant
+	ori	$t7, $t7, 0x8004
+	
+	lw	$t5, ($t7)
+	
+	
+	addi	$t4, $0, 2	# t4 = 2
+	sll	$t4, $t4, 3	# t4 = 16
+	add	$v0, $t4, $t1	
+	
+	lui	$t3, 98	# large constant
+	ori	$t3, $t3, 8
+	
+	sub	$t3, $t3, $t5	# subtract $t3 = $t3-$t7
+	
+	sub	$v0, $t3, $v0
+	
+	move	$a0,$v0	# print integer result
+	li	$v0,1	# using syscall 1
+	syscall
+
+	
+	li $v0,10
+	syscall		# bye bye
+
+
+
+
+#########################################
+#					#
+#     		data segment		#
+#					#
+#########################################
+
+	.data
+prompt:	.asciiz "Enter an integer: "
+endl:	.asciiz "\n"
+word:	.word 42
+value_stored: .word 394
+
+##
+## end of lab1(1).asm

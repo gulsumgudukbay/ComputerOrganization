@@ -1,0 +1,1133 @@
+##
+##	lab2(1).asm is a program that stores
+##	user inputted floating point numbers.
+##        
+
+#########################################
+#					#
+#		text segment		#
+#					#
+#########################################
+
+	.text		
+.globl main
+ 
+main:			#execution starts here
+	la 	$a0, prompt
+	li 	$v0, 4	#prints the prompt
+	syscall
+	
+	li 	$v0, 5	#reads an integer
+	syscall
+	
+	add	$s0, $0, $v0	# s0 = N = user input
+	move	$t0, $0		# initialize t0 to index = 0
+
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0	# get the address of array
+	la 	$a0, prompt2
+	li 	$v0, 4	# prints the prompt
+	syscall
+	
+loop:	
+	beq	$t0, $s0, loop_end # exit loop when index = N
+	
+	li 	$v0, 6	# reads a floating point number
+	syscall
+	
+	mfc1	$t1, $f0
+	sw	$t1, ($t2)
+	
+	addi	$t2, $t2, 4 # calculate next elements address
+
+	add	$t0, $t0, 1	# increment index
+	j	 loop	
+	
+loop_end:
+
+	addi	$t0, $0, 0 #initialize t0 = index = 0 again for print loop
+	
+	la 	$a0, msg1
+	li 	$v0, 4	# prints msg1
+	syscall
+	
+	la 	$a0, open_bracket
+	li 	$v0, 4	# prints open bracket
+	syscall
+
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0 # get the address of array
+print_loop:
+
+	beq 	$t0, $s0, print_loop_end # did the index come to the end?
+	
+	lw	$t1, ($t2) # print float at the index
+	mtc1	$t1, $f12
+	
+	li	$v0, 2
+	syscall
+	
+	la 	$a0, space
+	li 	$v0, 4	# prints space
+	syscall
+	
+	addi	$t0, $t0, 1 # advance index
+	addi	$t2, $t2, 4 # calculate the next element's address
+	
+	j print_loop # repeat the loop
+	
+print_loop_end:
+
+	la 	$a0, close_bracket
+	li 	$v0, 4	# prints close bracket
+	syscall
+
+#######	operations loop	#######
+	addi	$t0, $0, 0 #initialize t0 = index = 0 again for print loop
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0 # get the address of array
+op_loop:
+
+	beq 	$t0, $s0, op_loop_end # did the index come to the end?
+	
+	lwc1	$f0, ($t2) # load word from the address t2
+	lwc1	$f1, constant	#load the constant
+	lwc1	$f2, subtract	#load the subtraction amount
+	lwc1	$f3, divisor	#load the divisor
+	
+	neg.s	$f1, $f1	#constant = -constant
+	sub.s	$f1, $f1, $f2	#constant = constant-subtraction amount
+	div.s	$f1, $f1, $f3	#constant = constant/divisor
+	
+	add.s	$f0, $f1, $f0	#add the calculated amount f1 to the array element
+	
+	swc1	$f0, ($t2)	#store value back into the same place
+	
+	addi	$t0, $t0, 1 # advance index
+	addi	$t2, $t2, 4 # calculate the next element's address
+	
+	j op_loop # repeat the loop
+	
+op_loop_end:
+	
+	
+######## Print array after op's #######
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0 # get the address of array
+	
+	addi	$t0, $0, 0 #initialize t0 = index = 0 again for print loop
+	
+	la 	$a0, msg2
+	li 	$v0, 4	# prints msg2
+	syscall
+	
+	la 	$a0, open_bracket
+	li 	$v0, 4	# prints open bracket
+	syscall
+	
+print_loop_after:
+	beq $t0, $s0, print_loop_end_after # did the index come to the end?
+	
+	
+	lw	$t1, ($t2) # print float at the address
+	mtc1	$t1, $f12
+	
+
+	li $v0, 2
+	syscall
+	
+	la 	$a0, space
+	li 	$v0, 4	# prints space
+	syscall
+	
+	addi	$t0, $t0, 1 # advance index
+	addi	$t2, $t2, 4 # calculate the next element's address
+	
+	j print_loop_after # repeat the loop
+	
+print_loop_end_after:
+
+	la 	$a0, close_bracket
+	li 	$v0, 4	# prints close bracket
+	syscall	
+
+	
+	li	$v0, 10
+	syscall		# bye bye
+
+
+#########################################
+#					#
+#     		data segment		#
+#					#
+#########################################
+.data
+
+prompt:	.asciiz "\nEnter the number of floating point numbers you want to enter: "
+prompt2:.asciiz "\nEnter the floating point numbers: "
+msg1: .asciiz "\nContents of the array: "
+msg2: .asciiz "\nContents of the array after operations: "
+divisor: .float 3.5
+subtract: .float 12.898
+constant: .float -36.203	
+open_bracket: .asciiz "[ "
+close_bracket: .asciiz "]"
+space: .asciiz " "
+
+
+##
+##	lab2(2).asm 
+##        
+
+#########################################
+#					#
+#		text segment		#
+#					#
+#########################################
+
+	.text		
+.globl main
+ 
+main:			#execution starts here
+	la 	$a0, prompt
+	li 	$v0, 4	#prints the prompt
+	syscall
+	
+	li 	$v0, 5	#reads an integer
+	syscall
+	
+	add	$s0, $0, $v0	# s0 = N = user input
+	move	$t0, $0		# initialize t0 to index = 0
+
+	#la	$t2, array	# get the address of array
+	
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+	
+	la 	$a0, prompt2
+	li 	$v0, 4	# prints the prompt
+	syscall
+	
+loop:	
+	beq	$t0, $s0, loop_end # exit loop when index = N
+	
+	li 	$v0, 6	# reads a floating point number
+	syscall
+	
+	mfc1	$t1, $f0
+	sw	$t1, ($t2)
+	
+	addi	$t2, $t2, 4 # calculate next elements address
+
+	add	$t0, $t0, 1	# increment index
+	j	 loop	
+	
+loop_end:
+
+	addi	$t0, $0, 0 #initialize t0 = index = 0 again for print loop
+	
+	la 	$a0, msg1
+	li 	$v0, 4	# prints msg1
+	syscall
+	
+	la 	$a0, open_bracket
+	li 	$v0, 4	# prints open bracket
+	syscall
+
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+print_loop:
+
+	beq 	$t0, $s0, print_loop_end # did the index come to the end?
+	
+	lw	$t1, ($t2) # print float at the index
+	mtc1	$t1, $f12
+	
+	li	$v0, 2
+	syscall
+	
+	la 	$a0, space
+	li 	$v0, 4	# prints space
+	syscall
+	
+	addi	$t0, $t0, 1 # advance index
+	addi	$t2, $t2, 4 # calculate the next element's address
+	
+	j print_loop # repeat the loop
+	
+print_loop_end:
+
+	la 	$a0, close_bracket
+	li 	$v0, 4	# prints close bracket
+	syscall
+
+####MENU
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+
+do:
+	
+	la 	$a0, menu
+	li 	$v0, 4	# prints menu
+	syscall	
+	
+	
+	li 	$v0, 5	# reads an integer
+	syscall
+	
+	add	$s7, $0, $v0 # s7 = user choice
+	li	$t1, 3
+	#if block
+
+	slti	$t5, $s7, 1
+	sgt	$t6, $s7, $t1
+	or	$t5, $t5, $t6
+ 	beqz 	$t5, choice1
+
+ invalidInput:	#invalid input block
+ 	la 	$a0, invalid_input
+	li 	$v0, 4	# prints exit message
+	syscall	
+	b end_if
+	
+ choice1: #average
+ 	bne	$s7, 1, choice2
+ 	
+ 	la 	$a0, one
+	li 	$v0, 4	# prints 1
+	syscall	
+	#get the address of the array
+ 	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+ 	
+ 	li	$t0,0
+ 	l.s	$f5,zeroo	#initialize sum
+ 	sum_loop:
+ 		beq	$t0, $s0, sum_loop_end
+ 		
+ 		#get the float at t2
+ 		
+ 		l.s	$f1, ($t2) # load float at the index
+ 		add.s	$f5, $f5, $f1
+ 		
+ 		addi	$t2, $t2, 4	#advance address
+ 		addi	$t0, $t0, 1	#advance index
+ 		j	sum_loop
+
+ 	sum_loop_end:
+ 	
+ 	
+ 	sw   $s0, -88($fp)#converting integer to floating point
+	lwc1 $f4, -88($fp)
+	cvt.s.w $f4, $f4
+ 	
+
+ 	div.s	$f5, $f5, $f4	#calculate average
+ 	mov.s	$f12, $f5
+ 	li	$v0, 2
+	syscall
+ 	
+ 	
+ 	b end_if
+ 	
+ choice2: #count an element
+ 	bne	$s7, 2, else
+ 	
+ 	
+	
+	la 	$a0, enter_number
+	li 	$v0, 4	# prints enter number message
+	syscall	
+ 
+ 	li 	$v0, 6	# reads a floating point number
+	syscall
+	
+	la 	$a0, two
+	li 	$v0, 4	# prints 2
+	syscall	
+	
+	#get the address of the array
+ 	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+	
+	mov.s	$f5, $f0	#save the input number into f5
+	li	$t0, 0	#initialize index
+	li	$t3, 0	#initialize count
+	count_loop:
+		beq	$t0, $s0, end_count_loop	
+		
+		#get the float at t2
+ 		
+ 		l.s	$f1, ($t2) # load float at the address 
+		
+		c.eq.s	$f5, $f1
+		bc1f	dont_increment
+		
+		addi	$t3, $t3, 1
+		
+		dont_increment:
+		
+		addi	$t2, $t2, 4	#advance address
+		addi	$t0, $t0, 1	#advance index
+		
+		j	count_loop
+	end_count_loop:
+	la	$a0, ($t3)
+	li	$v0, 1
+	syscall
+ 
+ 	b end_if
+ 	 
+else:
+	b end
+	
+end_if: 
+
+	bne	$s7, 3, do
+end:
+
+
+	la 	$a0, five
+	li 	$v0, 4	# prints exit message
+	syscall	
+	
+
+
+
+####END OF MENU
+	
+	li	$v0, 10
+	syscall		# bye bye
+
+
+#########################################
+#					#
+#     		data segment		#
+#					#
+#########################################
+.data
+enter_number: .asciiz	"\nPlease enter a number to count its occurences in the array: " 
+prompt:	.asciiz "\nEnter the number of floating point numbers you want to enter: "
+prompt2:.asciiz "\nEnter the floating point numbers: "
+msg1: .asciiz "\nContents of the array: "	
+open_bracket: .asciiz "[ "
+close_bracket: .asciiz "]"
+space: .asciiz " "
+menu: .asciiz "\nPlease choose one of the choices below by entering its number:\n(1)the average of the array elements\n(2)the count of elements in the array\n(3) none of these\n"
+invalid_input:.asciiz "\nYou have entered an invalid input, please enter an integer between 1 and 5 (both inclusive)\t"
+two: .asciiz "The count of the selected element in the array is: "
+one: .asciiz "The average is: "
+five:	.asciiz "You have exited the program. Bye!" 
+zeroo: .float 0
+
+
+##
+##	lab2(3).asm is a program that stores
+##	and does operations on a 2d matrix
+##        
+
+#########################################
+#					#
+#		text segment		#
+#					#
+#########################################
+
+	.text		
+.globl main
+ 
+main:			#execution starts here
+
+	la 	$a0, matrix1
+	li 	$v0, 4	#matrix1
+	syscall
+
+	la 	$a0, prompt
+	li 	$v0, 4	#prints the prompt
+	syscall
+	
+	li 	$v0, 5	#reads an integer
+	syscall
+	
+	add	$s0, $0, $v0	# s0 = rows 
+	
+	la 	$a0, prompt2
+	li 	$v0, 4	#prints the prompt
+	syscall
+	
+	li 	$v0, 5	#reads an integer
+	syscall
+	
+	add	$s1, $0, $v0	# s1 = columns 
+	
+	move	$t0, $0		# initialize t0 to rowindex = 0
+
+	
+	la 	$a0, prompt3
+	li 	$v0, 4	# prints the prompt
+	syscall
+	la	$t2, array	# get the address of array
+	
+outer_loop:	
+
+	beq	$t0, $s0, outer_loop_end # exit loop when rowindex = rows
+	la	$t2, array	# get the address of array
+	move	$t1, $0		# initialize t1 to colindex = 0
+	
+	inner_loop:
+	
+		beq	$t1, $s1, inner_loop_end # exit loop when colindex = columns
+		la	$t2, array	# get the address of array
+
+		li 	$v0, 6	# reads a floating point number
+		syscall
+	
+	
+		###address calculation of the next element##
+		sll 	$t3, $t0, 2	#rowindex*4
+		mul	$t3, $t3, $s1
+		add	$t2, $t2, $t3
+		sll	$t3, $t1, 2	#colindex*4
+		add	$t2, $t2, $t3
+	
+		####
+
+	
+		mfc1	$t4, $f0
+		sw	$t4, ($t2)
+	
+	
+		addi	$t1, $t1, 1	# increment colindex
+		j	 inner_loop	
+	
+	inner_loop_end:
+	
+	addi	$t0, $t0, 1	# increment rowindex
+	j	outer_loop
+	
+outer_loop_end:
+
+
+	la 	$a0, msg1
+	li 	$v0, 4	#contents of the matrix is
+	syscall
+
+	la	$t2, array
+	move	$a0, $t2
+	move	$a1, $s0
+	move	$a2, $s1
+	
+
+	jal print_matrix
+	
+	############# END OF MATRIX 1
+	
+	############# MATRIX 2
+	
+	la 	$a0, matrix2
+	li 	$v0, 4	#matrix2
+	syscall
+	
+	la 	$a0, prompt
+	li 	$v0, 4	#prints the prompt
+	syscall
+	
+	li 	$v0, 5	#reads an integer
+	syscall
+	
+	add	$s2, $0, $v0	# s2 = rows of array2
+	
+	la 	$a0, prompt2
+	li 	$v0, 4	#prints the prompt
+	syscall
+	
+	li 	$v0, 5	#reads an integer
+	syscall
+	
+	add	$s3, $0, $v0	# s3 = columns of array2
+
+	move	$t0, $0		# initialize t0 to rowindex = 0
+
+	
+	la 	$a0, prompt3
+	li 	$v0, 4	# prints the prompt
+	syscall
+	la	$t2, array2	# get the address of array
+	
+outer_loop2:	
+
+	beq	$t0, $s2, outer_loop_end2 # exit loop when rowindex = rows
+	la	$t2, array2	# get the address of array
+	move	$t1, $0		# initialize t1 to colindex = 0
+	inner_loop2:
+		beq	$t1, $s3, inner_loop_end2 # exit loop when colindex = columns
+
+		la	$t2, array2	# get the address of array
+		li 	$v0, 6	# reads a floating point number
+		syscall
+	
+	
+		###address calculation of the next element##
+		sll 	$t3, $t0, 2	#rowindex*4
+		mul	$t3, $t3, $s3
+		add	$t2, $t2, $t3
+		sll	$t3, $t1, 2	#colindex*4
+		add	$t2, $t2, $t3
+	
+		####
+	
+	
+		mfc1	$t4, $f0
+		sw	$t4, ($t2)
+	
+		addi	$t1, $t1, 1	# increment colindex
+		j	 inner_loop2	
+	
+	inner_loop_end2:
+	
+	addi	$t0, $t0, 1	# increment rowindex
+	j	outer_loop2
+	
+outer_loop_end2:
+
+
+	la 	$a0, msg2
+	li 	$v0, 4	#contents of the matrix is
+	syscall
+
+	la	$t2, array2
+	move	$a0, $t2
+	move	$a1, $s2
+	move	$a2, $s3
+	
+
+	jal	print_matrix
+
+	
+do:
+	
+	la 	$a0, menu
+	li 	$v0, 4	# prints menu
+	syscall	
+	
+	
+	li 	$v0, 5	# reads an integer
+	syscall
+	
+	add	$s7, $0, $v0 # s7 = user choice
+	li	$t1, 5
+	#if block
+
+	slti	$t5, $s7, 1
+	sgt	$t6, $s7, $t1
+	or	$t5, $t5, $t6
+ 	beqz 	$t5, choice1
+
+ invalidInput:	#invalid input block
+ 	la 	$a0, invalid_input
+	li 	$v0, 4	# prints exit message
+	syscall	
+	b end_if
+	
+ choice1: #subtract matrices
+ 	bne	$s7, 1, choice2
+ 	
+ 	la 	$a0, one
+	li 	$v0, 4	# prints 1
+	syscall	
+ 	
+ 	la	$t2, array3
+	move	$a2, $t2
+	move	$a0, $s0
+	move	$a1, $s1
+
+	jal clear_matrix
+	
+	la	$t2, array3
+	move	$a2, $t2
+	move	$a0, $s0
+	move	$a1, $s3
+
+	jal clear_matrix
+ 	
+ 	la	$t2, array
+	move	$a0, $t2
+	la	$t2, array2
+	move	$a1, $t2
+	la	$t2, array3
+	move	$a2, $t2
+	
+	jal	matrix_subtraction
+	
+ 	
+ 	b end_if
+ 	
+ choice2: #max value 
+ 	bne	$s7, 2, choice3
+ 	
+ 	la 	$a0, two
+	li 	$v0, 4	# prints 2
+	syscall	
+	
+	la	$t2, array
+	move	$a0, $t2
+	
+	jal find_max
+ 
+ 	b end_if
+ 	 
+ choice3: #create value
+  	bne	$s7, 3, choice4
+  	
+  	la	$t2, array3
+	move	$a2, $t2
+	move	$a0, $s0
+	move	$a1, $s1
+
+	jal clear_matrix
+	
+	la	$t2, array3
+	move	$a2, $t2
+	move	$a0, $s0
+	move	$a1, $s3
+
+	jal clear_matrix
+  	
+  	
+  	jal create_value
+	
+ 	b end_if
+ 	
+ choice4: #cross product of two matrices
+ 	bne	$s7, 4, end
+ 	
+ 	la 	$a0, four
+	li 	$v0, 4	# prints 4
+	syscall	
+	
+	la	$t2, array3
+	move	$a2, $t2
+	move	$a0, $s0
+	move	$a1, $s1
+
+	jal clear_matrix
+	
+	la	$t2, array3
+	move	$a2, $t2
+	move	$a0, $s0
+	move	$a1, $s3
+
+	jal clear_matrix
+	
+	
+	la	$t2, array
+	move	$a0, $t2
+	la	$t2, array2
+	move	$a1, $t2
+	la	$t2, array3
+	move	$a2, $t2
+	move	$s3, $s3
+	
+	jal	matrix_multiplication
+	
+	b end_if
+ 	 
+else:
+	b end
+	
+end_if: 
+	print_after_operations:	
+	la 	$a0, matrix3
+	li 	$v0, 4	#matrix3
+	syscall
+	
+	la 	$a0, msg3
+	li 	$v0, 4	#msg3
+	syscall
+	
+	la	$t2, array3
+	move	$a0, $t2
+	move	$a1, $s0
+	move	$a2, $s3
+	
+	jal print_matrix
+
+	bne	$s7, 5, do
+end:
+
+
+	la 	$a0, five
+	li 	$v0, 4	# prints exit message
+	syscall	
+	
+				
+	
+	li	$v0, 10
+	syscall		# bye bye
+	
+	
+	
+matrix_subtraction:
+
+
+	addi	$sp, $sp, -28
+	sw	$s0, 0($sp)
+	sw	$s1, 4($sp)
+	sw	$s2, 8($sp)
+	sw	$s3, 12($sp)
+	#base addresses of matrices:
+	sw	$a0, 16($sp)
+	sw	$a1, 20($sp)
+	sw	$a2, 24($sp)
+	
+	
+	bne	$s0, $s2, error2 #base case for matrix subt
+	bne	$s1, $s3, error2 #base case for matrix subt
+	
+	addi	$t0, $0, 0	#i = 0
+	
+	for_out_sub:
+		beq	$t0, $s0, for_out_end_sub	#i!=row
+		addi	$t1, $0, 0	#j = 0
+		
+		for_in_sub:
+			beq	$t1, $s3, for_in_end_sub	#j!=col
+
+			#calculate addresses	
+				mul	$t7, $t0, $s3	#i*col
+				add	$t7, $t7, $t1	#i*col+j
+				sll	$t7, $t7, 2	#(i*col+j)*4
+				add	$t3, $t7, $a0	#(base address of matrix1) + t7
+				
+				add	$t4, $t7, $a1	#(base address of matrix2) + t7
+				
+				add	$t5, $t7, $a2	#(base address of matrix3) + t7
+				
+				#sum
+				lwc1	$f0, ($t5)	#load matrix3
+				lwc1	$f1, ($t3)	#load matrix1
+				lwc1	$f2, ($t4)	#load matrix2
+				
+				sub.s	$f0, $f1, $f2	#subtract
+				swc1	$f0, ($t5)	
+			
+			addi	$t1, $t1, 1
+			j	for_in_sub
+			
+		for_in_end_sub:
+		addi	$t0, $t0, 1
+		j	for_out_sub
+		
+	for_out_end_sub:
+	j	matrix_subt_end
+	
+	
+error2:
+	la 	$a0, errormsg
+	li 	$v0, 4	#error
+	syscall
+
+	
+matrix_subt_end:
+
+	lw	$a2, 24($sp)
+	lw	$a1, 20($sp)
+	lw	$a0, 16($sp)
+	lw	$s3, 12($sp)
+	lw	$s2, 8($sp)
+	lw	$s1, 4($sp)
+	lw	$s0, 0($sp)
+	addi	$sp, $sp, 28
+
+	jr $ra
+	
+
+create_value:
+    la  $a0, valuemsg	# enter a value
+    li  $v0, 4
+    syscall
+       
+    li  $v0, 6	# reads float
+    syscall
+   
+    mfc1    $v0, $f0	# return float
+   
+    jr  $ra
+
+
+
+find_max:
+	addi	$sp, $sp, -12
+	sw	$a0, 0($sp)
+	sw	$s0, 4($sp)
+	sw	$s1, 8($sp)
+
+
+	li	$t0, 0
+	max_loop_out:
+	beq	$t0, $s0, max_loop_out_end
+	li	$t1, 0 #initialize inner index
+		max_loop_in:
+			beq	$t1, $s1, max_loop_in_end
+				
+			mul	$t7, $t0, $a1	#i*col
+			add	$t7, $t7, $t1	#i*col+j
+			sll	$t7, $t7, 2	#(i*col+j)*4
+			add	$t3, $t7, $a0	#(base address of matrix) + t7
+			
+			mtc1    $t4, $f0	# current max = $f0
+			lwc1    $f1, ($t3)	# matrix[i][j] = $f1
+       
+			c.le.s  $f1, $f0
+       			bc1t	dont_update
+			mov.s   $f0, $f1
+       
+			dont_update:
+			mfc1    $t4, $f0
+			
+			addi	$t1, $t1, 1
+			j	max_loop_in
+		max_loop_in_end:
+	addi	$t0, $t0, 1
+	j	max_loop_out
+	max_loop_out_end:
+	
+	mtc1    $t4, $f12#print max
+	li  $v0, 2
+	syscall
+
+
+	lw	$s1, 8($sp)
+	lw	$s0, 4($sp)
+	lw	$a0, 0($sp)
+	addi	$sp, $sp, 12
+
+jr	$ra
+
+	
+matrix_multiplication:
+	# 1: axb, 2: bxc  3: axc
+	# s0=a, s1=b, s2=b, s3=c
+	# index calculations: 3[i*c+j]+=1[k*c+j]*2[i*b+k]
+	addi	$sp, $sp, -28
+	sw	$s0, 0($sp)
+	sw	$s1, 4($sp)
+	sw	$s2, 8($sp)
+	sw	$s3, 12($sp)
+	#base addresses of matrices:
+	sw	$a0, 16($sp)
+	sw	$a1, 20($sp)
+	sw	$a2, 24($sp)
+	
+	bne	$s1, $s2, error #base case for matrix mult
+	
+	addi	$t0, $0, 0	#i = 0
+	
+	for_out:
+		beq	$t0, $s0, for_out_end	#i!=a
+		addi	$t1, $0, 0	#j = 0
+		
+		for_mid:
+			beq	$t1, $s2, for_mid_end	#j!=c
+			addi	$t2, $0, 0	#k = 0
+			
+			for_inside:
+				beq	$s1, $t2, for_inside_end	#k!=b
+				#calculate addresses	
+				mul	$t7, $t0, $s1	#i*b
+				add	$t7, $t7, $t2	#i*b+k
+				mul	$t7, $t7, 4	#(i*b+k)*4
+				add	$t3, $t7, $a0	#(base address of matrix1) + t7
+				
+				mul	$t7, $t2, $s3	#k*c
+				add	$t7, $t7, $t1	#k*c+j
+				mul	$t7, $t7, 4	#(k*c+j)*4
+				add	$t4, $t7, $a1	#(base address of matrix2) + t7
+				
+				mul	$t7, $t0, $s3	#i*c
+				add	$t7, $t7, $t1	#i*c+j
+				mul	$t7, $t7, 4	#(i*c+j)*4
+				add	$t5, $t7, $a2	#(base address of matrix3) + t7
+				
+				#sum
+				lwc1	$f0, ($t5)	#load matrix3
+				lwc1	$f2, ($t3)	#load matrix1
+				lwc1	$f4, ($t4)	#load matrix2
+				
+				mul.s	$f6, $f2, $f4	#multiply
+				add.s	$f0, $f0, $f6	#sum
+				swc1	$f0, ($t5)	#store the sum back
+				
+				addi	$t2, $t2, 1
+				j	for_inside
+				
+			for_inside_end:
+			addi	$t1, $t1, 1
+			j	for_mid
+			
+		for_mid_end:
+		addi	$t0, $t0, 1
+		j	for_out
+		
+	for_out_end:
+	j	matrix_mult_end
+	
+	
+error:
+	la 	$a0, errormsg
+	li 	$v0, 4	#error
+	syscall
+
+	
+matrix_mult_end:
+
+	lw	$a2, 24($sp)
+	lw	$a1, 20($sp)
+	lw	$a0, 16($sp)
+	lw	$s3, 12($sp)
+	lw	$s2, 8($sp)
+	lw	$s1, 4($sp)
+	lw	$s0, 0($sp)
+	addi	$sp, $sp, 28
+
+	jr $ra
+
+		
+clear_matrix:
+	addi	$sp, $sp, -12
+	sw	$a0, 0($sp)#row
+	sw	$a1, 4($sp)#col
+	sw	$a2, 8($sp)#base address of matrix
+	
+	li	$t0, 0
+	clear_loop_out:
+	beq	$t0, $a0, clear_loop_out_end
+	li	$t1, 0 #initialize inner index
+		clear_loop_in:
+			beq	$t1, $a1, clear_loop_in_end
+				
+			mul	$t7, $t0, $a1	#i*col
+			add	$t7, $t7, $t1	#i*col+j
+			sll	$t7, $t7, 2	#(i*col+j)*4
+			add	$t3, $t7, $a2	#(base address of matrix) + t7
+				
+			l.s	$f0, zeroo
+			swc1	$f0, ($t3)	
+			
+			addi	$t1, $t1, 1
+			j	clear_loop_in
+		clear_loop_in_end:
+	addi	$t0, $t0, 1
+	j	clear_loop_out
+	clear_loop_out_end:
+	
+	lw	$a2, 8($sp)
+	lw	$a1, 4($sp)
+	lw	$a0, 0($sp)
+	addi	$sp, $sp, 12
+				
+	jr $ra			
+	
+print_matrix:	
+	addi	$sp, $sp, -16
+	sw	$a0, 0($sp)	#push address to stack
+	sw	$a1, 4($sp)	#push rows to stack
+	sw	$a2, 8($sp)	#push cols to stack
+	sw	$ra, 12($sp)	#push return address to the stack
+
+	addi	$t0, $0, 0
+	move	$t2, $a0
+	move	$t7, $a0
+	row_loop:
+
+		beq	$t0, $a1, end_row_loop
+		
+		move	$t2, $t7
+		
+		addi	$t1, $0 ,0
+
+		col_loop:
+
+			beq	$t1, $a2, end_col_loop	
+		move	$t2, $t7
+			###address calculation of the next element##
+			mul	$t3, $t0, 4	#rowindex*4
+			mul	$t3, $t3, $a2
+			add	$t2, $t2, $t3
+			mul	$t3, $t1, 4	#colindex*4
+			add	$t2, $t2, $t3
+	
+			####
+
+			lw	$t4, ($t2) # print float at the address
+			mtc1	$t4, $f12
+	
+			li	$v0, 2
+			syscall	
+			
+			la 	$a0, tab
+			li 	$v0, 4	#tab
+			syscall
+				
+			addi	$t1, $t1, 1
+			j	col_loop
+		
+		end_col_loop:
+		
+		la 	$a0, endl
+		li 	$v0, 4	#endl
+		syscall
+		
+		addi	$t0, $t0, 1
+		j	row_loop
+	end_row_loop:
+
+
+	lw	$ra, 12($sp)	#restore
+	lw	$a2, 8($sp)	#restore
+	lw	$a1, 4($sp)	#restore
+	lw	$a0, 0($sp)	#restore
+	
+	addi	$sp, $sp, 16
+
+	jr $ra
+	
+	
+
+
+#########################################
+#					#
+#     		data segment		#
+#					#
+#########################################
+.data
+
+array:	.space 2000	#500 element floating point array
+array2:	.space 2000	#500 element floating point array2
+array3: .space 2000	#500 element floating point array3
+zeroo: .float 0
+matrix1: .asciiz "\nMatrix1:"
+matrix2: .asciiz "\nMatrix2:"
+matrix3: .asciiz "\nMatrix3:"
+errormsg:.asciiz "\nError! The selected matrix operation cannot be performed on the matrices/matrix! "
+prompt:	.asciiz "\nEnter the number of rows: "
+prompt2:.asciiz "\nEnter the number of columns: "
+prompt3:.asciiz "\nEnter the floating point numbers in row major: "
+endl:	.asciiz "\n"
+msg1: .asciiz "\nContents of matrix:\n"
+msg2: .asciiz "\nContents of matrix2:\n"
+msg3: .asciiz "\nContents of matrix3:\n"
+valuemsg: .asciiz "\nPlease enter a value: "
+invalid_input:.asciiz "\nYou have entered an invalid input, please enter an integer between 1 and 5 (both inclusive)\t"
+one: .asciiz "The difference of two matrices is: "
+two: .asciiz "The maximum value is: "
+three: .asciiz "The duplicates removed from matrix is: "
+four: .asciiz "The cross product of two matrices is: "
+five:	.asciiz "You have exited the program. Bye!" 
+
+menu: .asciiz "\nPlease choose one of the choices below by entering its number:\n(1)difference of two matrices\n(2)find the min and max elements\n(3)create value\n(4)multiply two matrices\n(5) none of these\n"
+
+
+tab: .asciiz "\t"
+space: .asciiz " "
+
+

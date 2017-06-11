@@ -1,0 +1,771 @@
+Release 14.7 - xst P.20131013 (nt64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+--> Parameter TMPDIR set to xst/projnav.tmp
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.09 secs
+ 
+--> Parameter xsthdpdir set to xst
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.09 secs
+ 
+--> Reading design: mips.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Compilation
+  3) Design Hierarchy Analysis
+  4) HDL Analysis
+  5) HDL Synthesis
+     5.1) HDL Synthesis Report
+  6) Advanced HDL Synthesis
+     6.1) Advanced HDL Synthesis Report
+  7) Low Level Synthesis
+  8) Partition Report
+  9) Final Report
+	9.1) Device utilization summary
+	9.2) Partition Resource Summary
+	9.3) TIMING REPORT
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "mips.prj"
+Input Format                       : mixed
+Ignore Synthesis Constraint File   : NO
+
+---- Target Parameters
+Output File Name                   : "mips"
+Output Format                      : NGC
+Target Device                      : xc3s100e-5-cp132
+
+---- Source Options
+Top Module Name                    : mips
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+Safe Implementation                : No
+FSM Style                          : LUT
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Mux Style                          : Auto
+Decoder Extraction                 : YES
+Priority Encoder Extraction        : Yes
+Shift Register Extraction          : YES
+Logical Shifter Extraction         : YES
+XOR Collapsing                     : YES
+ROM Style                          : Auto
+Mux Extraction                     : Yes
+Resource Sharing                   : YES
+Asynchronous To Synchronous        : NO
+Multiplier Style                   : Auto
+Automatic Register Balancing       : No
+
+---- Target Options
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 100000
+Add Generic Clock Buffer(BUFG)     : 24
+Register Duplication               : YES
+Slice Packing                      : YES
+Optimize Instantiated Primitives   : NO
+Use Clock Enable                   : Yes
+Use Synchronous Set                : Yes
+Use Synchronous Reset              : Yes
+Pack IO Registers into IOBs        : Auto
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Speed
+Optimization Effort                : 1
+Keep Hierarchy                     : No
+Netlist Hierarchy                  : As_Optimized
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Read Cores                         : YES
+Write Timing Constraints           : NO
+Cross Clock Analysis               : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : Maintain
+Slice Utilization Ratio            : 100
+BRAM Utilization Ratio             : 100
+Verilog 2001                       : YES
+Auto BRAM Packing                  : NO
+Slice Utilization Ratio Delta      : 5
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Compilation                              *
+=========================================================================
+Compiling verilog file "sl2.v" in library work
+Compiling verilog file "signext.v" in library work
+Module <sl2> compiled
+Compiling verilog file "regFile.v" in library work
+Module <signext> compiled
+Compiling verilog file "mux4.v" in library work
+Module <regfile> compiled
+Compiling verilog file "mux2.v" in library work
+Module <mux4> compiled
+Compiling verilog file "maindec.v" in library work
+Module <mux2> compiled
+Compiling verilog file "flopenr.v" in library work
+Module <maindec> compiled
+Compiling verilog file "aludec.v" in library work
+Module <flopenr> compiled
+Compiling verilog file "alu.v" in library work
+Module <aludec> compiled
+Compiling verilog file "adder.v" in library work
+Module <alu> compiled
+Compiling verilog file "WriteBack.v" in library work
+Module <adder> compiled
+Compiling verilog file "HazardUnit.v" in library work
+Module <WriteBack> compiled
+Compiling verilog file "flopr.v" in library work
+Module <HazardUnit> compiled
+Compiling verilog file "Fetch.v" in library work
+Module <flopr> compiled
+Compiling verilog file "Execute.v" in library work
+Module <Fetch> compiled
+Compiling verilog file "Decode.v" in library work
+Module <Execute> compiled
+Compiling verilog file "controller.v" in library work
+Module <Decode> compiled
+Compiling verilog file "mips.v" in library work
+Module <controller> compiled
+Module <mips> compiled
+No errors in compilation
+Analysis of file <"mips.prj"> succeeded.
+ 
+
+=========================================================================
+*                     Design Hierarchy Analysis                         *
+=========================================================================
+Analyzing hierarchy for module <mips> in library <work>.
+
+Analyzing hierarchy for module <HazardUnit> in library <work>.
+
+Analyzing hierarchy for module <controller> in library <work>.
+
+Analyzing hierarchy for module <Fetch> in library <work>.
+
+Analyzing hierarchy for module <flopenr> in library <work> with parameters.
+	WIDTH = "00000000000000000000000000100000"
+
+Analyzing hierarchy for module <Decode> in library <work>.
+
+Analyzing hierarchy for module <flopr> in library <work> with parameters.
+	WIDTH = "00000000000000000000000000000001"
+
+Analyzing hierarchy for module <flopr> in library <work> with parameters.
+	WIDTH = "00000000000000000000000000000011"
+
+Analyzing hierarchy for module <flopr> in library <work> with parameters.
+	WIDTH = "00000000000000000000000000100000"
+
+Analyzing hierarchy for module <flopr> in library <work> with parameters.
+	WIDTH = "00000000000000000000000000000101"
+
+Analyzing hierarchy for module <Execute> in library <work>.
+
+Analyzing hierarchy for module <WriteBack> in library <work>.
+
+Analyzing hierarchy for module <maindec> in library <work>.
+
+Analyzing hierarchy for module <aludec> in library <work>.
+
+Analyzing hierarchy for module <adder> in library <work>.
+
+Analyzing hierarchy for module <mux2> in library <work> with parameters.
+	WIDTH = "00000000000000000000000000100000"
+
+Analyzing hierarchy for module <regfile> in library <work>.
+
+Analyzing hierarchy for module <sl2> in library <work>.
+
+Analyzing hierarchy for module <signext> in library <work>.
+
+Analyzing hierarchy for module <mux4> in library <work> with parameters.
+	WIDTH = "00000000000000000000000000100000"
+
+Analyzing hierarchy for module <mux2> in library <work> with parameters.
+	WIDTH = "00000000000000000000000000000101"
+
+Analyzing hierarchy for module <alu> in library <work>.
+
+
+=========================================================================
+*                            HDL Analysis                               *
+=========================================================================
+Analyzing top module <mips>.
+Module <mips> is correct for synthesis.
+ 
+Analyzing module <HazardUnit> in library <work>.
+Module <HazardUnit> is correct for synthesis.
+ 
+Analyzing module <controller> in library <work>.
+Module <controller> is correct for synthesis.
+ 
+Analyzing module <maindec> in library <work>.
+Module <maindec> is correct for synthesis.
+ 
+Analyzing module <aludec> in library <work>.
+Module <aludec> is correct for synthesis.
+ 
+Analyzing module <Fetch> in library <work>.
+Module <Fetch> is correct for synthesis.
+ 
+Analyzing module <adder> in library <work>.
+Module <adder> is correct for synthesis.
+ 
+Analyzing module <mux2.1> in library <work>.
+	WIDTH = 32'sb00000000000000000000000000100000
+Module <mux2.1> is correct for synthesis.
+ 
+Analyzing module <flopenr> in library <work>.
+	WIDTH = 32'sb00000000000000000000000000100000
+Module <flopenr> is correct for synthesis.
+ 
+Analyzing module <Decode> in library <work>.
+Module <Decode> is correct for synthesis.
+ 
+Analyzing module <regfile> in library <work>.
+Module <regfile> is correct for synthesis.
+ 
+Analyzing module <sl2> in library <work>.
+Module <sl2> is correct for synthesis.
+ 
+Analyzing module <signext> in library <work>.
+Module <signext> is correct for synthesis.
+ 
+Analyzing module <flopr.1> in library <work>.
+	WIDTH = 32'sb00000000000000000000000000000001
+Module <flopr.1> is correct for synthesis.
+ 
+Analyzing module <flopr.2> in library <work>.
+	WIDTH = 32'sb00000000000000000000000000000011
+Module <flopr.2> is correct for synthesis.
+ 
+Analyzing module <flopr.3> in library <work>.
+	WIDTH = 32'sb00000000000000000000000000100000
+Module <flopr.3> is correct for synthesis.
+ 
+Analyzing module <flopr.4> in library <work>.
+	WIDTH = 32'sb00000000000000000000000000000101
+Module <flopr.4> is correct for synthesis.
+ 
+Analyzing module <Execute> in library <work>.
+Module <Execute> is correct for synthesis.
+ 
+Analyzing module <mux4> in library <work>.
+	WIDTH = 32'sb00000000000000000000000000100000
+Module <mux4> is correct for synthesis.
+ 
+Analyzing module <mux2.2> in library <work>.
+	WIDTH = 32'sb00000000000000000000000000000101
+Module <mux2.2> is correct for synthesis.
+ 
+Analyzing module <alu> in library <work>.
+Module <alu> is correct for synthesis.
+ 
+Analyzing module <WriteBack> in library <work>.
+Module <WriteBack> is correct for synthesis.
+ 
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Performing bidirectional port resolution...
+
+Synthesizing Unit <HazardUnit>.
+    Related source file is "HazardUnit.v".
+    Found 5-bit comparator equal for signal <forwardAE$cmp_eq0000> created at line 27.
+    Found 5-bit comparator equal for signal <forwardAE$cmp_eq0001> created at line 27.
+    Found 5-bit comparator equal for signal <forwardBE$cmp_eq0000> created at line 28.
+    Found 5-bit comparator equal for signal <forwardBE$cmp_eq0001> created at line 28.
+    Found 5-bit comparator equal for signal <stallF$cmp_eq0000> created at line 31.
+    Found 5-bit comparator equal for signal <stallF$cmp_eq0001> created at line 31.
+    Summary:
+	inferred   6 Comparator(s).
+Unit <HazardUnit> synthesized.
+
+
+Synthesizing Unit <flopenr>.
+    Related source file is "flopenr.v".
+    Found 32-bit register for signal <q>.
+    Summary:
+	inferred  32 D-type flip-flop(s).
+Unit <flopenr> synthesized.
+
+
+Synthesizing Unit <flopr_1>.
+    Related source file is "flopr.v".
+    Found 1-bit register for signal <q<0>>.
+    Summary:
+	inferred   1 D-type flip-flop(s).
+Unit <flopr_1> synthesized.
+
+
+Synthesizing Unit <flopr_2>.
+    Related source file is "flopr.v".
+    Found 3-bit register for signal <q>.
+    Summary:
+	inferred   3 D-type flip-flop(s).
+Unit <flopr_2> synthesized.
+
+
+Synthesizing Unit <flopr_3>.
+    Related source file is "flopr.v".
+    Found 32-bit register for signal <q>.
+    Summary:
+	inferred  32 D-type flip-flop(s).
+Unit <flopr_3> synthesized.
+
+
+Synthesizing Unit <flopr_4>.
+    Related source file is "flopr.v".
+    Found 5-bit register for signal <q>.
+    Summary:
+	inferred   5 D-type flip-flop(s).
+Unit <flopr_4> synthesized.
+
+
+Synthesizing Unit <maindec>.
+    Related source file is "maindec.v".
+Unit <maindec> synthesized.
+
+
+Synthesizing Unit <aludec>.
+    Related source file is "aludec.v".
+Unit <aludec> synthesized.
+
+
+Synthesizing Unit <adder>.
+    Related source file is "adder.v".
+    Found 32-bit adder for signal <y>.
+    Summary:
+	inferred   1 Adder/Subtractor(s).
+Unit <adder> synthesized.
+
+
+Synthesizing Unit <mux2_1>.
+    Related source file is "mux2.v".
+Unit <mux2_1> synthesized.
+
+
+Synthesizing Unit <regfile>.
+    Related source file is "regFile.v".
+    Found 32x32-bit dual-port RAM <Mram_rf> for signal <rf>.
+    Found 32x32-bit dual-port RAM <Mram_rf_ren> for signal <rf>.
+    Summary:
+	inferred   2 RAM(s).
+Unit <regfile> synthesized.
+
+
+Synthesizing Unit <sl2>.
+    Related source file is "sl2.v".
+WARNING:Xst:647 - Input <a<31:30>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+Unit <sl2> synthesized.
+
+
+Synthesizing Unit <signext>.
+    Related source file is "signext.v".
+Unit <signext> synthesized.
+
+
+Synthesizing Unit <mux4>.
+    Related source file is "mux4.v".
+    Found 32-bit 3-to-1 multiplexer for signal <y>.
+    Summary:
+	inferred  32 Multiplexer(s).
+Unit <mux4> synthesized.
+
+
+Synthesizing Unit <mux2_2>.
+    Related source file is "mux2.v".
+Unit <mux2_2> synthesized.
+
+
+Synthesizing Unit <alu>.
+    Related source file is "alu.v".
+    Found 32-bit addsub for signal <result$addsub0000>.
+    Found 32-bit comparator less for signal <result$cmp_lt0000> created at line 21.
+    Summary:
+	inferred   1 Adder/Subtractor(s).
+	inferred   1 Comparator(s).
+Unit <alu> synthesized.
+
+
+Synthesizing Unit <controller>.
+    Related source file is "controller.v".
+Unit <controller> synthesized.
+
+
+Synthesizing Unit <Fetch>.
+    Related source file is "Fetch.v".
+Unit <Fetch> synthesized.
+
+
+Synthesizing Unit <Decode>.
+    Related source file is "Decode.v".
+WARNING:Xst:647 - Input <PCPlus4D<27:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <instructionD<31:26>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:646 - Signal <shiftedAddress<31:28>> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
+Unit <Decode> synthesized.
+
+
+Synthesizing Unit <Execute>.
+    Related source file is "Execute.v".
+Unit <Execute> synthesized.
+
+
+Synthesizing Unit <WriteBack>.
+    Related source file is "WriteBack.v".
+Unit <WriteBack> synthesized.
+
+
+Synthesizing Unit <mips>.
+    Related source file is "mips.v".
+Unit <mips> synthesized.
+
+INFO:Xst:1767 - HDL ADVISOR - Resource sharing has identified that some arithmetic operations in this design can share the same physical resources for reduced device utilization. For improved clock frequency you may try to disable resource sharing.
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# RAMs                                                 : 2
+ 32x32-bit dual-port RAM                               : 2
+# Adders/Subtractors                                   : 3
+ 32-bit adder                                          : 2
+ 32-bit addsub                                         : 1
+# Registers                                            : 28
+ 1-bit register                                        : 11
+ 3-bit register                                        : 1
+ 32-bit register                                       : 11
+ 5-bit register                                        : 5
+# Comparators                                          : 7
+ 32-bit comparator less                                : 1
+ 5-bit comparator equal                                : 6
+# Multiplexers                                         : 2
+ 32-bit 3-to-1 multiplexer                             : 2
+
+=========================================================================
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+WARNING:Xst:2677 - Node <q_30> of sequential type is unconnected in block <ffinstr>.
+
+Synthesizing (advanced) Unit <regfile>.
+INFO:Xst:3217 - HDL ADVISOR - Register <q> currently described with an asynchronous reset, could be combined with distributed RAM <Mram_rf> for implementation on block RAM resources if you made this reset synchronous instead.
+    -----------------------------------------------------------------------
+    | ram_type           | Distributed                         |          |
+    -----------------------------------------------------------------------
+    | Port A                                                              |
+    |     aspect ratio   | 32-word x 32-bit                    |          |
+    |     clkA           | connected to signal <clk>           | rise     |
+    |     weA            | connected to signal <we3>           | high     |
+    |     addrA          | connected to signal <wa3>           |          |
+    |     diA            | connected to signal <wd3>           |          |
+    -----------------------------------------------------------------------
+    | Port B                                                              |
+    |     aspect ratio   | 32-word x 32-bit                    |          |
+    |     addrB          | connected to signal <ra1>           |          |
+    |     doB            | connected to internal node          |          |
+    -----------------------------------------------------------------------
+INFO:Xst:3217 - HDL ADVISOR - Register <q> currently described with an asynchronous reset, could be combined with distributed RAM <Mram_rf_ren> for implementation on block RAM resources if you made this reset synchronous instead.
+    -----------------------------------------------------------------------
+    | ram_type           | Distributed                         |          |
+    -----------------------------------------------------------------------
+    | Port A                                                              |
+    |     aspect ratio   | 32-word x 32-bit                    |          |
+    |     clkA           | connected to signal <clk>           | rise     |
+    |     weA            | connected to signal <we3>           | high     |
+    |     addrA          | connected to signal <wa3>           |          |
+    |     diA            | connected to signal <wd3>           |          |
+    -----------------------------------------------------------------------
+    | Port B                                                              |
+    |     aspect ratio   | 32-word x 32-bit                    |          |
+    |     addrB          | connected to signal <ra2>           |          |
+    |     doB            | connected to internal node          |          |
+    -----------------------------------------------------------------------
+INFO:Xst:3218 - HDL ADVISOR - The RAM <Mram_rf> will be implemented on LUTs either because you have described an asynchronous read or because of currently unsupported block RAM features. If you have described an asynchronous read, making it synchronous would allow you to take advantage of available block RAM resources, for optimized device usage and improved timings. Please refer to your documentation for coding guidelines.
+INFO:Xst:3218 - HDL ADVISOR - The RAM <Mram_rf_ren> will be implemented on LUTs either because you have described an asynchronous read or because of currently unsupported block RAM features. If you have described an asynchronous read, making it synchronous would allow you to take advantage of available block RAM resources, for optimized device usage and improved timings. Please refer to your documentation for coding guidelines.
+Unit <regfile> synthesized (advanced).
+
+=========================================================================
+Advanced HDL Synthesis Report
+
+Macro Statistics
+# RAMs                                                 : 2
+ 32x32-bit dual-port distributed RAM                   : 2
+# Adders/Subtractors                                   : 3
+ 32-bit adder                                          : 2
+ 32-bit addsub                                         : 1
+# Registers                                            : 391
+ Flip-Flops                                            : 391
+# Comparators                                          : 7
+ 32-bit comparator less                                : 1
+ 5-bit comparator equal                                : 6
+# Multiplexers                                         : 2
+ 32-bit 3-to-1 multiplexer                             : 2
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+
+Optimizing unit <mips> ...
+
+Optimizing unit <HazardUnit> ...
+
+Optimizing unit <flopenr> ...
+
+Optimizing unit <flopr_3> ...
+
+Optimizing unit <regfile> ...
+
+Optimizing unit <alu> ...
+
+Optimizing unit <Execute> ...
+WARNING:Xst:2677 - Node <ffinstr/q_30> of sequential type is unconnected in block <mips>.
+
+Mapping all equations...
+Building and optimizing final netlist ...
+INFO:Xst:2261 - The FF/Latch <rd/q_0> in Unit <mips> is equivalent to the following FF/Latch, which will be removed : <imm/q_11> 
+INFO:Xst:2261 - The FF/Latch <rd/q_1> in Unit <mips> is equivalent to the following FF/Latch, which will be removed : <imm/q_12> 
+INFO:Xst:2261 - The FF/Latch <rd/q_2> in Unit <mips> is equivalent to the following FF/Latch, which will be removed : <imm/q_13> 
+INFO:Xst:2261 - The FF/Latch <rd/q_3> in Unit <mips> is equivalent to the following FF/Latch, which will be removed : <imm/q_14> 
+INFO:Xst:2261 - The FF/Latch <rd/q_4> in Unit <mips> is equivalent to the following 17 FFs/Latches, which will be removed : <imm/q_31> <imm/q_30> <imm/q_29> <imm/q_28> <imm/q_27> <imm/q_26> <imm/q_25> <imm/q_24> <imm/q_23> <imm/q_22> <imm/q_21> <imm/q_20> <imm/q_19> <imm/q_18> <imm/q_17> <imm/q_16> <imm/q_15> 
+Found area constraint ratio of 100 (+ 5) on block mips, actual ratio is 49.
+FlipFlop mtrm/q_0 has been replicated 1 time(s)
+FlipFlop wrm/q_0 has been replicated 1 time(s)
+
+Final Macro Processing ...
+
+=========================================================================
+Final Register Report
+
+Macro Statistics
+# Registers                                            : 371
+ Flip-Flops                                            : 371
+
+=========================================================================
+
+=========================================================================
+*                           Partition Report                            *
+=========================================================================
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+=========================================================================
+*                            Final Report                               *
+=========================================================================
+Final Results
+RTL Top Level Output File Name     : mips.ngr
+Top Level Output File Name         : mips
+Output Format                      : NGC
+Optimization Goal                  : Speed
+Keep Hierarchy                     : No
+
+Design Statistics
+# IOs                              : 163
+
+Cell Usage :
+# BELS                             : 943
+#      GND                         : 1
+#      INV                         : 1
+#      LUT1                        : 29
+#      LUT2                        : 37
+#      LUT2_D                      : 1
+#      LUT2_L                      : 2
+#      LUT3                        : 229
+#      LUT3_D                      : 16
+#      LUT3_L                      : 23
+#      LUT4                        : 300
+#      LUT4_D                      : 18
+#      LUT4_L                      : 43
+#      MUXCY                       : 130
+#      MUXF5                       : 20
+#      VCC                         : 1
+#      XORCY                       : 92
+# FlipFlops/Latches                : 371
+#      FDC                         : 276
+#      FDCE                        : 95
+# RAMS                             : 128
+#      RAM16X1D                    : 128
+# Clock Buffers                    : 1
+#      BUFGP                       : 1
+# IO Buffers                       : 161
+#      IBUF                        : 64
+#      OBUF                        : 97
+=========================================================================
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 3s100ecp132-5 
+
+ Number of Slices:                      495  out of    960    51%  
+ Number of Slice Flip Flops:            371  out of   1920    19%  
+ Number of 4 input LUTs:                955  out of   1920    49%  
+    Number used as logic:               699
+    Number used as RAMs:                256
+ Number of IOs:                         163
+ Number of bonded IOBs:                 162  out of     83   195% (*) 
+ Number of GCLKs:                         1  out of     24     4%  
+
+WARNING:Xst:1336 -  (*) More than 100% of Device resources are used
+
+---------------------------
+Partition Resource Summary:
+---------------------------
+
+  No Partitions were found in this design.
+
+---------------------------
+
+
+=========================================================================
+TIMING REPORT
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+clk                                | BUFGP                  | 499   |
+-----------------------------------+------------------------+-------+
+
+Asynchronous Control Signals Information:
+----------------------------------------
+-----------------------------------+------------------------+-------+
+Control Signal                     | Buffer(FF name)        | Load  |
+-----------------------------------+------------------------+-------+
+reset                              | IBUF                   | 177   |
+clearE(clearE1_f5:O)               | NONE(acd/q_0)          | 131   |
+clearD(clearD1:O)                  | NONE(ffinstr/q_0)      | 63    |
+-----------------------------------+------------------------+-------+
+
+Timing Summary:
+---------------
+Speed Grade: -5
+
+   Minimum period: 15.362ns (Maximum Frequency: 65.096MHz)
+   Minimum input arrival time before clock: 1.731ns
+   Maximum output required time after clock: 4.252ns
+   Maximum combinational path delay: No path found
+
+Timing Detail:
+--------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'clk'
+  Clock period: 15.362ns (frequency: 65.096MHz)
+  Total number of paths / destination ports: 3429101 / 1683
+-------------------------------------------------------------------------
+Delay:               15.362ns (Levels of Logic = 17)
+  Source:            wre/q_2 (FF)
+  Destination:       f/pcregister/q_31 (FF)
+  Source Clock:      clk rising
+  Destination Clock: clk rising
+
+  Data Path: wre/q_2 to f/pcregister/q_31
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDC:C->Q              3   0.514   0.603  wre/q_2 (wre/q_2)
+     LUT4_D:I0->O         13   0.612   0.866  h/forwardBE_and000048 (h/forwardBE_and000048)
+     LUT4:I2->O           18   0.612   0.911  h/forwardBE<0>106_SW0 (N371)
+     LUT4_D:I3->O         15   0.612   0.894  h/forwardBE<0>106 (forwardBE<0>)
+     LUT3:I2->O            1   0.612   0.387  e/forwrdBMux/Mmux_y40_SW2 (N491)
+     LUT3:I2->O            3   0.612   0.481  e/forwrdBMux/Mmux_y40 (writeDataE<27>)
+     LUT3:I2->O            2   0.612   0.410  e/srcBMux/y<27>1 (e/outputOfsrcBMux<27>)
+     LUT3:I2->O            1   0.612   0.000  e/a/Maddsub_result_addsub0000_lut<27> (e/a/Maddsub_result_addsub0000_lut<27>)
+     MUXCY:S->O            1   0.404   0.000  e/a/Maddsub_result_addsub0000_cy<27> (e/a/Maddsub_result_addsub0000_cy<27>)
+     XORCY:CI->O           1   0.699   0.360  e/a/Maddsub_result_addsub0000_xor<28> (e/a/result_addsub0000<28>)
+     LUT4:I3->O            2   0.612   0.383  e/a/result<28> (ALUOutE<28>)
+     LUT4:I3->O            1   0.612   0.000  e/PCSrcE_wg_lut<4> (e/PCSrcE_wg_lut<4>)
+     MUXCY:S->O            1   0.404   0.000  e/PCSrcE_wg_cy<4> (e/PCSrcE_wg_cy<4>)
+     MUXCY:CI->O           1   0.052   0.000  e/PCSrcE_wg_cy<5> (e/PCSrcE_wg_cy<5>)
+     MUXCY:CI->O           1   0.052   0.000  e/PCSrcE_wg_cy<6> (e/PCSrcE_wg_cy<6>)
+     MUXCY:CI->O           1   0.052   0.000  e/PCSrcE_wg_cy<7> (e/PCSrcE_wg_cy<7>)
+     MUXCY:CI->O          34   0.399   1.103  e/PCSrcE_wg_cy<8> (PCSrcE)
+     LUT3:I2->O            1   0.612   0.000  f/jumpMux/y<9> (f/pcNext<9>)
+     FDCE:D                    0.268          f/pcregister/q_9
+    ----------------------------------------
+    Total                     15.362ns (8.963ns logic, 6.399ns route)
+                                       (58.3% logic, 41.7% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'clk'
+  Total number of paths / destination ports: 63 / 63
+-------------------------------------------------------------------------
+Offset:              1.731ns (Levels of Logic = 1)
+  Source:            instrF<31> (PAD)
+  Destination:       ffinstr/q_31 (FF)
+  Destination Clock: clk rising
+
+  Data Path: instrF<31> to ffinstr/q_31
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O             1   1.106   0.357  instrF_31_IBUF (instrF_31_IBUF)
+     FDCE:D                    0.268          ffinstr/q_31
+    ----------------------------------------
+    Total                      1.731ns (1.374ns logic, 0.357ns route)
+                                       (79.4% logic, 20.6% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'clk'
+  Total number of paths / destination ports: 97 / 97
+-------------------------------------------------------------------------
+Offset:              4.252ns (Levels of Logic = 1)
+  Source:            aluo/q_7 (FF)
+  Destination:       ALUOutM<7> (PAD)
+  Source Clock:      clk rising
+
+  Data Path: aluo/q_7 to ALUOutM<7>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDC:C->Q              6   0.514   0.569  aluo/q_7 (aluo/q_7)
+     OBUF:I->O                 3.169          ALUOutM_7_OBUF (ALUOutM<7>)
+    ----------------------------------------
+    Total                      4.252ns (3.683ns logic, 0.569ns route)
+                                       (86.6% logic, 13.4% route)
+
+=========================================================================
+
+
+Total REAL time to Xst completion: 10.00 secs
+Total CPU time to Xst completion: 10.06 secs
+ 
+--> 
+
+Total memory usage is 282564 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :    7 (   0 filtered)
+Number of infos    :   10 (   0 filtered)
+

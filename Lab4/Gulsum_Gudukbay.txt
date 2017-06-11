@@ -1,0 +1,242 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    19:59:02 03/01/2016 
+// Design Name: 
+// Module Name:    top 
+
+// Top level system including MIPS and memories
+
+// Written by David_Harris@hmc.edu 9 November 2005
+//  with edits and improvements by Will Sawyer in 2013
+
+//SIMULATION
+/*module top( input         clk, reset, //sw_input, 
+            output [31:0] writedata, dataadr,
+            output        memwrite);
+				//output [0:3] AN,
+				//output [6:0] C, 
+				//output DP);
+
+ 
+  wire [31:0] pc, instr, readdata;// writedata, dataadr;
+  
+  // instantiate processor and memories
+
+  mips mips(clk, reset, pc, instr, memwrite, dataadr, writedata, readdata);
+  imem imem(pc[7:2], instr);
+  dmem dmem(clk, memwrite, dataadr, writedata, readdata);
+ 
+//  displaycontroller dc( clk, reset,4'b1111, dataadr[3:0], dataadr[7:4], writedata[3:0], writedata[7:4], AN, C, DP);
+//  pulsecontroller pulsec( clk, sw_input, reset, clk_pulse );
+endmodule
+*/
+//DEMO
+module top( input         clk, reset, sw_input, 
+           // output [31:0] writedata, dataadr,
+            output        memwrite,
+				output [0:3] AN,
+				output [6:0] C, 
+				output DP);
+
+ 
+  wire [31:0] pc, instr, readdata, writedata, dataadr;
+  
+  // instantiate processor and memories
+
+  mips mips(clk_pulse, reset, pc, instr, memwrite, dataadr, writedata, readdata);
+  imem imem(pc[7:2], instr);
+  dmem dmem(clk_pulse, memwrite, dataadr, writedata, readdata);
+ 
+  displaycontroller dc( clk, reset,4'b1111, dataadr[3:0], dataadr[7:4], writedata[3:0], writedata[7:4], AN, C, DP);
+  pulsecontroller pulsec( clk, sw_input, reset, clk_pulse );
+endmodule
+
+
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    19:57:17 03/01/2016 
+// Design Name: 
+// Module Name:    mips 
+
+module mips (input         clk, reset,
+             output [31:0] PCF,
+             input  [31:0] instrF,
+             output        memWriteM,
+             output [31:0] ALUOutM, writeDataM,
+             input  [31:0] readDataM);
+				 
+  wire [1:0] forwardAE, forwardBE;
+  wire [2:0]  ALUControlD, ALUControlE;
+  wire [31:0] jumpTAddrD, PCBranchE,instrD, PCPlus4F, PCPlus4D,PCPlus4E, rd1D, rd1E, rd2D,rd2E, signImmD, signImmE, ALUOutE, ALUOutW, resultW, writeDataE, readDataW;
+  wire [4:0] writeRegW, writeRegM, writeRegE, rsD, rtD, rdD, rsE, rtE, rdE;
+
+
+  HazardUnit h(rsD, rtD, rsE, rtE, writeRegM, writeRegW, memToRegE, regWriteM, regWriteW, PCSrcE, jumpD, stallF, stallD, flushE,flushD, forwardAE, forwardBE);
+
+  controller c (instrD[31:26], instrD[5:0], memToRegD, memWriteD,ALUSrcD, regDstD, regWriteD, jumpD, branchD, ALUControlD);
+  
+  ////////////////FETCH/////////////////
+  or(clearD, flushD, reset);
+  not(decodeEn, stallD);
+  Fetch f( clk, reset, jumpD, PCSrcE, stallF, jumpTAddrD, PCBranchE, PCF, PCPlus4F);
+  flopenr #(32)ffpcPlus4(clk, clearD, decodeEn, PCPlus4F, PCPlus4D);
+  flopenr #(32) ffinstr (clk, clearD, decodeEn, instrF, instrD);
+  
+  ////////////////DECODE/////////////////
+  or(clearE, flushE, reset);
+  Decode d(clk, regWriteW, writeRegW, instrD, PCPlus4D, resultW, rd1D, rd2D, jumpTAddrD, signImmD, rsD, rtD, rdD);
+  flopr #(1) rwd(clk, clearE, regWriteD, regWriteE);
+  flopr #(1) mtrd(clk, clearE, memToRegD, memToRegE);
+  flopr #(1) mwd(clk, clearE, memWriteD, memWriteE);
+  flopr #(3) acd(clk, clearE, ALUControlD, ALUControlE);
+  flopr #(1) asd(clk, clearE, ALUSrcD, ALUSrcE);
+  flopr #(1) rdd(clk, clearE, regDstD, regDstE);
+  flopr #(1) bd(clk, clearE, branchD, branchE);
+  
+  flopr #(32) read1(clk, clearE, rd1D, rd1E);
+  flopr #(32) read2(clk, clearE, rd2D, rd2E);
+
+  flopr #(5) rs(clk, clearE, rsD, rsE);
+  flopr #(5) rt(clk, clearE, rtD, rtE);
+  flopr #(5) rd(clk, clearE, rdD, rdE);
+
+  flopr #(32) imm(clk, clearE, signImmD, signImmE);
+  flopr #(32) pcp4(clk, clearE, PCPlus4D, PCPlus4E);
+
+
+  ////////////////EXECUTE/////////////////
+  Execute e(branchE, regDstE, ALUSrcE, forwardAE, forwardBE, ALUControlE, rtE, rdE, rd1E, rd2E, signImmE, PCPlus4E, ALUOutM, resultW, ALUOutE, writeDataE, PCBranchE, writeRegE, PCSrcE);
+  flopr #(1) rwe(clk, reset, regWriteE, regWriteM);
+  flopr #(1) mtre(clk, reset, memToRegE, memToRegM);
+  flopr #(1) mwe(clk, reset, memWriteE, memWriteM);
+  
+  flopr #(32) aluo(clk, reset, ALUOutE, ALUOutM);
+  flopr #(32) wde(clk, reset, writeDataE, writeDataM);
+  flopr #(5) wre(clk, reset, writeRegE, writeRegM);
+  
+
+  ////////////////MEMORY/////////////////
+  flopr #(1) rwm(clk, reset, regWriteM, regWriteW);
+  flopr #(1) mtrm(clk, reset, memToRegM, memToRegW);
+  
+  flopr #(5) wrm(clk, reset, writeRegM, writeRegW);
+  flopr #(32) rdm(clk, reset, readDataM, readDataW);
+  flopr #(32) aluow(clk, reset, ALUOutM, ALUOutW);
+
+  ////////////////WRITEBACK/////////////////
+  WriteBack w( memToRegW, readDataW, ALUOutW, resultW);
+
+  
+endmodule
+
+
+
+module HazardUnit( input [4:0] rsD, rtD, rsE, rtE, writeRegM, writeRegW,
+						 input memToRegE, regWriteM, regWriteW, branch, jump,
+						 output stallF, stallD, flushE, flushD,
+						 output [1:0] forwardAE, forwardBE); 
+    
+//Compute - use hazard
+assign forwardAE = ((rsE!=0)&&(rsE == writeRegM) && regWriteM)? 2'b10 : (((rsE != 0)&&(rsE == writeRegW) && regWriteW) ? 2'b01:2'b00);
+assign forwardBE = ((rtE!=0)&&(rtE == writeRegM) && regWriteM)? 2'b10 : (((rtE != 0)&&(rtE == writeRegW) && regWriteW) ? 2'b01:2'b00);
+
+
+//Load - use hazard
+assign stallF = (((rsD == rtE) || (rtD == rtE)) && (memToRegE));
+assign stallD = stallF;
+assign flushE = stallF|branch;
+
+//J - Type Jump Hazard and Branching Hazard
+assign flushD = branch ;//| jump;
+
+endmodule
+
+
+
+
+
+module Fetch( input clk, reset, jumpD, PCSrcE, stallF,
+				  input [31:0] jumpTAddrD, PCBranchE,
+				  output [31:0] PCF, PCPlus4F);
+
+not(enclock, stallF);
+
+wire [31:0] pcNext, pcNextDoBranch;
+flopenr #(32) pcregister(clk, reset, enclock, pcNext, PCF);
+
+adder a(PCF, 32'd4, PCPlus4F);
+mux2 #(32) branchMux(PCPlus4F, PCBranchE, PCSrcE, pcNextDoBranch);
+mux2 #(32) jumpMux(pcNextDoBranch, jumpTAddrD, jumpD, pcNext);
+
+
+endmodule
+
+
+
+module Decode( input clk, RegWriteW, 
+					input [4:0] writeRegW,
+					input [31:0] instructionD, PCPlus4D, resultW,
+					output [31:0] rd1D, rd2D, jtaD, signImm, 
+					output [4:0] rsD, rtD, rdD);
+  
+assign rsD = instructionD[25:21];
+assign rtD = instructionD[20:16];
+assign rdD = instructionD[15:11];
+
+regfile rf(clk, RegWriteW, instructionD[25:21],
+                 instructionD[20:16], writeRegW,
+                 resultW, rd1D, rd2D);
+
+signext si(instructionD[15:0], signImm);
+assign jtaD = {PCPlus4D[31:28], instructionD[25:0],2'b00};
+
+
+endmodule
+
+
+
+//////////////////////////////////////////////////////////////////////////////////
+module Execute( input branchE, regDstE, ALUsrcE, 
+					 input [1:0] forwardAE, forwardBE,
+					 input [2:0] ALUControlE,
+					 input [4:0] rtE, rdE,
+					 input [31:0] rd1E, rd2E, signImmE, PCPlus4E, ALUOutM, resultW,
+					 output [31:0] ALUOutE, writeDataE, PCBranchE,
+					 output [4:0] writeRegE,
+					 output PCSrcE);
+
+wire [31:0] outOffrwrdAMux, outputOfsrcBMux, shiftedImm; 
+
+mux4 #(32) forwrdAMux(rd1E, resultW, ALUOutM, forwardAE, outOffrwrdAMux);
+mux4 #(32) forwrdBMux(rd2E, resultW, ALUOutM, forwardBE, writeDataE);
+
+mux2 #(5) rtOrRd(rtE, rdE, regDstE, writeRegE);
+mux2 #(32) srcBMux(writeDataE, signImmE, ALUsrcE, outputOfsrcBMux);
+sl2 shiftSignExtImm(signImmE, shiftedImm);
+adder adderForPCBranchE(shiftedImm, PCPlus4E, PCBranchE);
+alu a(outOffrwrdAMux, outputOfsrcBMux, ALUControlE, ALUOutE,ALUZero);
+and(PCSrcE, branchE, ALUZero);
+
+endmodule
+
+
+
+// parameterized register with enable
+module flopenr #(parameter WIDTH = 8)
+                (input                  clk, reset,
+                 input                  en,
+                 input      [WIDTH-1:0] d, 
+                 output reg [WIDTH-1:0] q);
+ 
+  always @(posedge clk, posedge reset)
+    if      (reset) q <= 0;
+    else if (en)    q <= d;
+endmodule
+
+

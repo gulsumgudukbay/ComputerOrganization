@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -o "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/testttt_isim_beh.exe" -prj "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/testttt_beh.prj" "work.testttt" "work.glbl" 

@@ -1,0 +1,3 @@
+xst -intstyle ise -ifn "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/mips.xst" -ofn "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/mips.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -i -p xc3s100e-cp132-5 "mips.ngc" mips.ngd  
+map -intstyle ise -p xc3s100e-cp132-5 -cm area -ir off -pr off -c 100 -o mips_map.ncd mips.ngd mips.pcf 

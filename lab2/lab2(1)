@@ -1,0 +1,176 @@
+##
+##	lab2(1).asm is a program that stores
+##	user inputted floating point numbers.
+##        
+
+#########################################
+#					#
+#		text segment		#
+#					#
+#########################################
+
+	.text		
+.globl main
+ 
+main:			#execution starts here
+	la 	$a0, prompt
+	li 	$v0, 4	#prints the prompt
+	syscall
+	
+	li 	$v0, 5	#reads an integer
+	syscall
+	
+	add	$s0, $0, $v0	# s0 = N = user input
+	move	$t0, $0		# initialize t0 to index = 0
+
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0	# get the address of array
+	la 	$a0, prompt2
+	li 	$v0, 4	# prints the prompt
+	syscall
+	
+loop:	
+	beq	$t0, $s0, loop_end # exit loop when index = N
+	
+	li 	$v0, 6	# reads a floating point number
+	syscall
+	
+	mfc1	$t1, $f0
+	sw	$t1, ($t2)
+	
+	addi	$t2, $t2, 4 # calculate next elements address
+
+	add	$t0, $t0, 1	# increment index
+	j	 loop	
+	
+loop_end:
+
+	addi	$t0, $0, 0 #initialize t0 = index = 0 again for print loop
+	
+	la 	$a0, msg1
+	li 	$v0, 4	# prints msg1
+	syscall
+	
+	la 	$a0, open_bracket
+	li 	$v0, 4	# prints open bracket
+	syscall
+
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0 # get the address of array
+print_loop:
+
+	beq 	$t0, $s0, print_loop_end # did the index come to the end?
+	
+	lw	$t1, ($t2) # print float at the index
+	mtc1	$t1, $f12
+	
+	li	$v0, 2
+	syscall
+	
+	la 	$a0, space
+	li 	$v0, 4	# prints space
+	syscall
+	
+	addi	$t0, $t0, 1 # advance index
+	addi	$t2, $t2, 4 # calculate the next element's address
+	
+	j print_loop # repeat the loop
+	
+print_loop_end:
+
+	la 	$a0, close_bracket
+	li 	$v0, 4	# prints close bracket
+	syscall
+
+#######	operations loop	#######
+	addi	$t0, $0, 0 #initialize t0 = index = 0 again for print loop
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0 # get the address of array
+op_loop:
+
+	beq 	$t0, $s0, op_loop_end # did the index come to the end?
+	
+	lwc1	$f0, ($t2) # load word from the address t2
+	lwc1	$f1, constant	#load the constant
+	lwc1	$f2, subtract	#load the subtraction amount
+	lwc1	$f3, divisor	#load the divisor
+	
+	neg.s	$f1, $f1	#constant = -constant
+	sub.s	$f1, $f1, $f2	#constant = constant-subtraction amount
+	div.s	$f1, $f1, $f3	#constant = constant/divisor
+	
+	add.s	$f0, $f1, $f0	#add the calculated amount f1 to the array element
+	
+	swc1	$f0, ($t2)	#store value back into the same place
+	
+	addi	$t0, $t0, 1 # advance index
+	addi	$t2, $t2, 4 # calculate the next element's address
+	
+	j op_loop # repeat the loop
+	
+op_loop_end:
+	
+	
+######## Print array after op's #######
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0 # get the address of array
+	
+	addi	$t0, $0, 0 #initialize t0 = index = 0 again for print loop
+	
+	la 	$a0, msg2
+	li 	$v0, 4	# prints msg2
+	syscall
+	
+	la 	$a0, open_bracket
+	li 	$v0, 4	# prints open bracket
+	syscall
+	
+print_loop_after:
+	beq $t0, $s0, print_loop_end_after # did the index come to the end?
+	
+	
+	lw	$t1, ($t2) # print float at the address
+	mtc1	$t1, $f12
+	
+
+	li $v0, 2
+	syscall
+	
+	la 	$a0, space
+	li 	$v0, 4	# prints space
+	syscall
+	
+	addi	$t0, $t0, 1 # advance index
+	addi	$t2, $t2, 4 # calculate the next element's address
+	
+	j print_loop_after # repeat the loop
+	
+print_loop_end_after:
+
+	la 	$a0, close_bracket
+	li 	$v0, 4	# prints close bracket
+	syscall	
+
+	
+	li	$v0, 10
+	syscall		# bye bye
+
+
+#########################################
+#					#
+#     		data segment		#
+#					#
+#########################################
+.data
+
+prompt:	.asciiz "\nEnter the number of floating point numbers you want to enter: "
+prompt2:.asciiz "\nEnter the floating point numbers: "
+msg1: .asciiz "\nContents of the array: "
+msg2: .asciiz "\nContents of the array after operations: "
+divisor: .float 3.5
+subtract: .float 12.898
+constant: .float -36.203	
+open_bracket: .asciiz "[ "
+close_bracket: .asciiz "]"
+space: .asciiz " "
+

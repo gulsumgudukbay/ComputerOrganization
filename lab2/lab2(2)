@@ -1,0 +1,246 @@
+##
+##	lab2(1).asm is a program that stores
+##	user inputted floating point numbers.
+##        
+
+#########################################
+#					#
+#		text segment		#
+#					#
+#########################################
+
+	.text		
+.globl main
+ 
+main:			#execution starts here
+	la 	$a0, prompt
+	li 	$v0, 4	#prints the prompt
+	syscall
+	
+	li 	$v0, 5	#reads an integer
+	syscall
+	
+	add	$s0, $0, $v0	# s0 = N = user input
+	move	$t0, $0		# initialize t0 to index = 0
+
+	#la	$t2, array	# get the address of array
+	
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+	
+	la 	$a0, prompt2
+	li 	$v0, 4	# prints the prompt
+	syscall
+	
+loop:	
+	beq	$t0, $s0, loop_end # exit loop when index = N
+	
+	li 	$v0, 6	# reads a floating point number
+	syscall
+	
+	mfc1	$t1, $f0
+	sw	$t1, ($t2)
+	
+	addi	$t2, $t2, 4 # calculate next elements address
+
+	add	$t0, $t0, 1	# increment index
+	j	 loop	
+	
+loop_end:
+
+	addi	$t0, $0, 0 #initialize t0 = index = 0 again for print loop
+	
+	la 	$a0, msg1
+	li 	$v0, 4	# prints msg1
+	syscall
+	
+	la 	$a0, open_bracket
+	li 	$v0, 4	# prints open bracket
+	syscall
+
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+print_loop:
+
+	beq 	$t0, $s0, print_loop_end # did the index come to the end?
+	
+	lw	$t1, ($t2) # print float at the index
+	mtc1	$t1, $f12
+	
+	li	$v0, 2
+	syscall
+	
+	la 	$a0, space
+	li 	$v0, 4	# prints space
+	syscall
+	
+	addi	$t0, $t0, 1 # advance index
+	addi	$t2, $t2, 4 # calculate the next element's address
+	
+	j print_loop # repeat the loop
+	
+print_loop_end:
+
+	la 	$a0, close_bracket
+	li 	$v0, 4	# prints close bracket
+	syscall
+
+####MENU
+	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+
+do:
+	
+	la 	$a0, menu
+	li 	$v0, 4	# prints menu
+	syscall	
+	
+	
+	li 	$v0, 5	# reads an integer
+	syscall
+	
+	add	$s7, $0, $v0 # s7 = user choice
+	li	$t1, 3
+	#if block
+
+	slti	$t5, $s7, 1
+	sgt	$t6, $s7, $t1
+	or	$t5, $t5, $t6
+ 	beqz 	$t5, choice1
+
+ invalidInput:	#invalid input block
+ 	la 	$a0, invalid_input
+	li 	$v0, 4	# prints exit message
+	syscall	
+	b end_if
+	
+ choice1: #average
+ 	bne	$s7, 1, choice2
+ 	
+ 	la 	$a0, one
+	li 	$v0, 4	# prints 1
+	syscall	
+	#get the address of the array
+ 	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+ 	
+ 	li	$t0,0
+ 	l.s	$f5,zeroo	#initialize sum
+ 	sum_loop:
+ 		beq	$t0, $s0, sum_loop_end
+ 		
+ 		#get the float at t2
+ 		
+ 		l.s	$f1, ($t2) # load float at the index
+ 		add.s	$f5, $f5, $f1
+ 		
+ 		addi	$t2, $t2, 4	#advance address
+ 		addi	$t0, $t0, 1	#advance index
+ 		j	sum_loop
+
+ 	sum_loop_end:
+ 	
+ 	
+ 	sw   $s0, -88($fp)#converting integer to floating point
+	lwc1 $f4, -88($fp)
+	cvt.s.w $f4, $f4
+ 	
+
+ 	div.s	$f5, $f5, $f4	#calculate average
+ 	mov.s	$f12, $f5
+ 	li	$v0, 2
+	syscall
+ 	
+ 	
+ 	b end_if
+ 	
+ choice2: #count an element
+ 	bne	$s7, 2, else
+ 	
+ 	
+	
+	la 	$a0, enter_number
+	li 	$v0, 4	# prints enter number message
+	syscall	
+ 
+ 	li 	$v0, 6	# reads a floating point number
+	syscall
+	
+	la 	$a0, two
+	li 	$v0, 4	# prints 2
+	syscall	
+	
+	#get the address of the array
+ 	lui	$t2, 0x1000
+	ori	$t2, $t2, 0x00F0
+	
+	mov.s	$f5, $f0	#save the input number into f5
+	li	$t0, 0	#initialize index
+	li	$t3, 0	#initialize count
+	count_loop:
+		beq	$t0, $s0, end_count_loop	
+		
+		#get the float at t2
+ 		
+ 		l.s	$f1, ($t2) # load float at the address 
+		
+		c.eq.s	$f5, $f1
+		bc1f	dont_increment
+		
+		addi	$t3, $t3, 1
+		
+		dont_increment:
+		
+		addi	$t2, $t2, 4	#advance address
+		addi	$t0, $t0, 1	#advance index
+		
+		j	count_loop
+	end_count_loop:
+	la	$a0, ($t3)
+	li	$v0, 1
+	syscall
+ 
+ 	b end_if
+ 	 
+else:
+	b end
+	
+end_if: 
+
+	bne	$s7, 3, do
+end:
+
+
+	la 	$a0, five
+	li 	$v0, 4	# prints exit message
+	syscall	
+	
+
+
+
+####END OF MENU
+	
+	li	$v0, 10
+	syscall		# bye bye
+
+
+#########################################
+#					#
+#     		data segment		#
+#					#
+#########################################
+.data
+enter_number: .asciiz	"\nPlease enter a number to count its occurences in the array: " 
+prompt:	.asciiz "\nEnter the number of floating point numbers you want to enter: "
+prompt2:.asciiz "\nEnter the floating point numbers: "
+msg1: .asciiz "\nContents of the array: "	
+open_bracket: .asciiz "[ "
+close_bracket: .asciiz "]"
+space: .asciiz " "
+menu: .asciiz "\nPlease choose one of the choices below by entering its number:\n(1)the average of the array elements\n(2)the count of elements in the array\n(3) none of these\n"
+invalid_input:.asciiz "\nYou have entered an invalid input, please enter an integer between 1 and 5 (both inclusive)\t"
+two: .asciiz "The count of the selected element in the array is: "
+one: .asciiz "The average is: "
+five:	.asciiz "You have exited the program. Bye!" 
+zeroo: .float 0
+

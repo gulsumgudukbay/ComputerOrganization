@@ -1,0 +1,361 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: Gulsum Gudukbay
+// 
+// Create Date:    19:48:28 03/01/2016 
+// Design Name: 
+// Module Name:    alu 
+
+module alu(input      [31:0] a, b, 
+           input      [2:0]  alucont, 
+           output reg [31:0] result,
+           output            zero);
+
+   always @(*)begin
+    case(alucont)
+	 3'b010: result = a + b; 
+	 3'b110: result = a - b;
+	 3'b000: result = a & b;
+	 3'b001: result = a | b;
+	 3'b011: result = (a>=b) ? 1:0;
+	 3'b111: result = (a<b) ? 1:0;
+    default: result = 32'b0;
+    endcase
+	 end
+	 
+	 assign zero =(result == 32'b0) ? 32'b1 : 32'b0;
+endmodule
+
+
+`timescale 1ns / 1ps
+
+////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer:
+//
+// Create Date:   02:07:58 03/04/2016
+// Design Name:   alu
+// Module Name:   C:/Users/Gulsum Gudukbay/Documents/CS223/LABS/proje/SingleCycleMIPSLite/testAlu.v
+// Project Name:  SingleCycleMIPSLite
+// Target Device:  
+// Tool versions:  
+// Description: 
+//
+// Verilog Test Fixture created by ISE for module: alu
+//
+// Dependencies:
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+////////////////////////////////////////////////////////////////////////////////
+
+module testAlu;
+
+	// Inputs
+	reg [31:0] a;
+	reg [31:0] b;
+	reg [31:0] alucont;
+
+	// Outputs
+	wire [31:0] result;
+	wire zero;
+
+	// Instantiate the Unit Under Test (UUT)
+	alu uut (
+		.a(a), 
+		.b(b), 
+		.alucont(alucont), 
+		.result(result), 
+		.zero(zero)
+	);
+	
+
+	initial begin
+		// Initialize Inputs
+		a = 0;
+		b = 0;
+		alucont = 0;
+
+		#100;
+		// Add stimulus here
+		#20;
+		alucont = 3'b010;
+		#20;
+		alucont = 3'b110;
+		#20;
+		alucont = 3'b000;
+		#20;
+		alucont = 3'b001;
+		#20;
+		alucont = 3'b011;
+		#20;
+		alucont = 3'b111;
+		
+		#20;
+		a = 32'd10;
+		b = 32'd5;
+		alucont = 3'b010;
+		
+		#20;
+
+
+
+	end
+	
+      
+endmodule
+
+
+
+
+
+////////////////////////
+
+module top( input         clk, reset, sw_input, 
+           // output [31:0] writedata, dataadr,
+            output        memwrite,
+				output [0:3] AN,
+				output [6:0] C, 
+				output DP);
+
+ 
+  wire [31:0] pc, instr, readdata, writedata, dataadr;
+  
+  // instantiate processor and memories
+
+  mips mips(clk_pulse, reset, pc, instr, memwrite, dataadr, writedata, readdata);
+  imem imem(pc[7:2], instr);
+  dmem dmem(clk_pulse, memwrite, dataadr, writedata, readdata);
+
+  displaycontroller dc( clk, reset,4'b1111, dataadr[7:4], dataadr[3:0], writedata[7:4], writedata[3:0], AN, C, DP);
+  pulsecontroller pulsec( clk, sw_input, reset, clk_pulse );
+
+endmodule
+
+
+
+module mips (input         clk, reset,
+             output [31:0] pc,
+             input  [31:0] instr,
+             output        memwrite,
+             output [31:0] aluout, writedata,
+             input  [31:0] readdata);
+
+  wire        memtoreg, pcsrc, zero,
+              alusrc, regdst, regwrite, jump,
+				  branchIfEqualOrGreater,
+				  jalr,
+				  isImmed, writeToRS;
+  wire [2:0]  alucontrol;
+
+  controller c (instr[31:26], instr[5:0], zero,
+               memtoreg, memwrite, pcsrc,
+               alusrc, regdst, regwrite, jump,
+               branchIfEqualOrGreater,
+					jalr,
+					isImmed, writeToRS, alucontrol);
+  datapath dp (clk, reset, memtoreg, pcsrc,
+              alusrc, regdst, regwrite, jump,
+				  branchIfEqualOrGreater,
+				  jalr,
+				  isImmed, writeToRS,
+				  alucontrol, zero, pc, instr,
+              aluout, writedata, readdata);
+				  
+			
+endmodule
+
+
+
+module datapath(input         clk, reset,
+                input         memtoreg, pcsrc,
+                input         alusrc, regdst,
+                input         regwrite, jump,
+					 input			branchIfEqualOrGreater,
+					 input			jalr,
+					 input			isImmed, writeToRS,
+                input  [2:0]  alucontrol, 
+                output        outputOfbegMux,
+                output [31:0] pc,
+                input  [31:0] instr,
+                output [31:0] aluout, writedata,
+                input  [31:0] readdata);
+
+  wire [4:0]  writereg;
+  wire [31:0] pcnext, pcnextbr, pcplus4, pcbranch;
+  wire [31:0] signimm, signimmsh;
+  wire [31:0] srca, srcb;
+  wire [31:0] result;
+  
+  wire [31:0] outputOfMinusFourMux, outputOfJalrLeftMux, outputOfjalrRightMux;
+  wire [4:0] outputOfWriteToRSMux;
+  // next PC logic
+  flopr #(32) pcreg(clk, reset, pcnext, pc);
+  adder       pcadd1(pc, 32'b100, pcplus4);
+  sl2         immsh(signimm, signimmsh);
+  adder       pcadd2(pcplus4, signimmsh, pcbranch);
+  mux2 #(32)  branchmux(pcplus4, pcbranch, pcsrc,
+                      pcnextbr);
+							 
+  mux2 #(32)  jalrLeftMux({pcplus4[31:28], 
+                    instr[25:0], 2'b00}, srca, jalr, outputOfJalrLeftMux);
+  mux2 #(32)  jumpmux(pcnextbr, outputOfJalrLeftMux, 
+                    jump, pcnext);
+
+  mux2 #(32)  minusfourmux(32'hFFFFFFFC, signimm, isImmed, outputOfMinusFourMux);
+
+
+  // register file logic
+  
+  mux2 #(32)  jalrRightMux(result, pcplus4, jalr, outputOfjalrRightMux);
+  
+  regfile     rf(clk, regwrite, instr[25:21],
+                 instr[20:16], writereg,
+                 outputOfjalrRightMux, srca, writedata);
+					  
+  mux2 #(5)  writeToRSMux(instr[15:11], instr[25:21], writeToRS, outputOfWriteToRSMux);
+  mux2 #(5)   w_addrmux(instr[20:16], outputOfWriteToRSMux,
+                    regdst, writereg);
+  mux2 #(32)  w_datamux(aluout, readdata,
+                     memtoreg, result);
+  signext     se(instr[15:0], signimm);
+
+  // ALU logic
+  mux2 #(32)  srcbmux(writedata, outputOfMinusFourMux, alusrc, srcb);
+  mux2 # (1) begMux(zero, aluout[0], branchIfEqualOrGreater, outputOfbegMux);
+
+  alu         alu(srca, srcb, alucontrol,
+                  aluout, zero);
+						
+					
+						
+endmodule
+
+
+
+
+module controller(input  [5:0] op, funct,
+                  input        zero,
+                  output       memtoreg, memwrite,
+                  output       pcsrc, alusrc,
+                  output       regdst, regwrite,
+                  output       jump,
+						
+						output		 branchIfEqualOrGreater,
+						output		 jalr,
+						output		 isImmed, writeToRS,
+						
+                  output [2:0] alucontrol);
+
+  wire [1:0] aluop;
+  wire       branch;
+
+  maindec md (op, regwrite, regdst, alusrc, branch,
+             memwrite, memtoreg, aluop, jump, 
+				 branchIfEqualOrGreater, jalr, isImmed, writeToRS);
+  aludec  ad (funct, aluop, alucontrol);
+
+  assign pcsrc = branch & zero;
+endmodule
+
+
+
+module maindec(input  [5:0] op,
+               output       regwrite, regdst,
+               output       alusrc, branch, 
+               output       memwrite, memtoreg,
+               output [1:0] aluop, 
+               output       jump,
+					output		 branchIfEqualOrGreater,
+					output		 jalr,
+					output		 isImmed, writeToRS);
+
+  reg [12:0] controls;
+
+  assign {regwrite, regdst, alusrc, branch, 
+          memwrite, memtoreg, aluop, jump, 
+			 branchIfEqualOrGreater, jalr, 
+			 isImmed, writeToRS} = controls;
+
+  always @(*)
+    case(op)
+      6'b000000: controls <= 13'b110000100x0x0; // R-type
+      6'b100011: controls <= 13'b101001000x01x; // LW
+      6'b101011: controls <= 13'b001010000xx1x; // SW
+      6'b000100: controls <= 13'b0001000100xxx; // BEQ
+      6'b001000: controls <= 13'b101000000x01x; // ADDI
+      6'b000010: controls <= 13'b000000001x0xx; // J
+		6'b010101: controls <= 13'b0x010x1101xxx; // bge
+		6'b101111: controls <= 13'b11xx0xxx1x1x0; // jalr
+		6'b101100: controls <= 13'b111010000x001; // push
+		6'b111111: controls <= 13'b101011000x01x; // swapRM
+      default:   controls <= 13'bxxxxxxxxx; // ???
+    endcase
+endmodule
+
+
+module aludec(input      [5:0] funct,
+              input      [1:0] aluop,
+              output reg [2:0] alucontrol);
+
+  always @(*)
+    case(aluop)
+      2'b00: alucontrol <= 3'b010;  // add
+      2'b01: alucontrol <= 3'b110;  // sub
+		2'b10: case(funct)          // RTYPE
+          6'b100000: alucontrol <= 3'b010; // ADD
+          6'b100010: alucontrol <= 3'b110; // SUB
+          6'b100100: alucontrol <= 3'b000; // AND
+          6'b100101: alucontrol <= 3'b001; // OR
+          6'b101010: alucontrol <= 3'b111; // SLT
+          default:   alucontrol <= 3'bxxx; // ???
+        endcase
+		2'b11: alucontrol <= 3'b011; //bge
+    endcase
+endmodule
+
+
+
+
+
+
+module imem ( input [5:0] addr,
+    		   output reg [31:0] instr);
+
+	always@(addr)
+	   case ({addr,2'b00})		   // word-aligned fetch
+//		address		instruction
+//		-------		-----------
+		8'h00: instr = 32'h20020005;  // disassemble, by hand 
+		8'h04: instr = 32'h2003000c;  // or with a program,
+		8'h08: instr = 32'h2067fff7;  // to find out what
+		8'h0c: instr = 32'h00e22025;  // this program does!
+		8'h10: instr = 32'h00642824;
+		8'h14: instr = 32'h00a42820;
+		8'h18: instr = 32'h10a7000a;
+		8'h1c: instr = 32'h0064202a;
+		8'h20: instr = 32'h10800001;
+		8'h24: instr = 32'h20050000;
+		8'h28: instr = 32'h00e2202a;
+		8'h2c: instr = 32'h00853820;
+		8'h30: instr = 32'h00e23822;
+		8'h34: instr = 32'hac670044;
+		8'h38: instr = 32'h8c020050;
+		8'h3c: instr = 32'h08000011; 
+		8'h40: instr = 32'h20020001;
+		8'h44: instr = 32'b01010100000000000000000000000001; // bge if 0 == 0, to the next next instruction
+		8'h48: instr = 32'h00e22025;
+		8'h4c: instr = 32'b11111100000001110000000001010100; // swapRM $7, 84($0) 
+		8'h50: instr = 32'b10110011101001110000000000000000; // push  $7
+		8'h54: instr = 32'b10111100000000001111100000000000; // jalr $0 (rs:$0, rt:$0, rd:$31 ($ra))
+		8'h58: instr = 32'hac020054;//not using
+		8'h6c: instr = 32'h08000012;	// j 48, so it will loop here - not using
+	     default: instr = {32{1'bx}};	// unknown address
+	   endcase
+endmodule
+
+
+

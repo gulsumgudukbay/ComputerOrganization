@@ -1,0 +1,17 @@
+//  For correct connections, the following should be in the .UCF file
+  NET "AN(3)"  LOC = "F12";  //left-most digit
+  NET "AN(2)"  LOC = "J12";
+  NET "AN(1)"  LOC = "M13";
+  NET "AN(0)"  LOC = "K14";  // right-most digit
+  NET "C(6)"   LOC = "L14";  // CA
+  NET "C(5)"   LOC = "H12";  // CB
+  NET "C(4)"   LOC = "N14";  // CC
+  NET "C(3)"   LOC = "N11";  // CD 
+  NET "C(2)"   LOC = "P12";  // CE
+  NET "C(1)"   LOC = "L13";  // GF
+  NET "C(0)"   LOC = "M12";  // CG
+  NET "DP"     LOC = "N13";
+  NET "clk"		LOC = "B8";   //clk
+  NET "reset"  LOC = "G12";  //reset
+  NET "sw_input" LOC = "A7";  //user input for pulses
+  NET "memwrite" LOC = "M5";  //memwrite control

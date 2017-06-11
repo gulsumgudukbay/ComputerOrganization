@@ -1,0 +1,63 @@
+Running: C:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\unwrapped\fuse.exe -intstyle ise -incremental -lib unisims_ver -lib unimacro_ver -lib xilinxcorelib_ver -o C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/testttt_isim_beh.exe -prj C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/testttt_beh.prj work.testttt work.glbl 
+ISim P.20131013 (signature 0x7708f090)
+Number of CPUs detected in this system: 8
+Turning on mult-threading, number of parallel sub-compilation jobs: 16 
+Determining compilation order of HDL files
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/sl2.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/signext.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/regFile.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/mux4.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/mux2.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/maindec.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/flopenr.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/aludec.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/alu.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/adder.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/WriteBack.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/HazardUnit.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/flopr.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/Fetch.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/Execute.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/Decode.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/controller.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/mips.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/imem.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/dmem.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/top.v" into library work
+Analyzing Verilog file "C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/testtt.v" into library work
+Analyzing Verilog file "C:/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v" into library work
+Starting static elaboration
+Completed static elaboration
+Compiling module HazardUnit
+Compiling module maindec
+Compiling module aludec
+Compiling module controller
+Compiling module flopenr(WIDTH=32)
+Compiling module adder
+Compiling module mux2(WIDTH=32)
+Compiling module Fetch
+Compiling module regfile
+Compiling module signext
+Compiling module Decode
+Compiling module flopr(WIDTH=1)
+Compiling module flopr(WIDTH=3)
+Compiling module flopr(WIDTH=32)
+Compiling module flopr(WIDTH=5)
+Compiling module mux4
+Compiling module mux2(WIDTH=5)
+Compiling module sl2
+Compiling module alu
+Compiling module Execute
+Compiling module WriteBack
+Compiling module mips
+Compiling module imem
+Compiling module dmem
+Compiling module top
+Compiling module testttt
+Compiling module glbl
+Time Resolution for simulation is 1ps.
+Waiting for 12 sub-compilation(s) to finish...
+Compiled 27 Verilog Units
+Built simulation executable C:/Users/Gulsum Gudukbay/Documents/CS224/Lab4/PipelinedProcessorMIPS/testttt_isim_beh.exe
+Fuse Memory Usage: 29072 KB
+Fuse CPU Usage: 499 ms

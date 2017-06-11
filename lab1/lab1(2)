@@ -1,0 +1,72 @@
+##
+##	lab1(2).asm is a simple program that prompts the user 
+##	to enter an integer N, and computes the factorial of
+##	the integers from 0 to N.
+##        
+
+#########################################
+#					#
+#		text segment		#
+#					#
+#########################################
+
+	.text		
+.globl __start
+ 
+__start:		# execution starts here
+	la 	$a0, prompt
+	li 	$v0, 4	# prints the prompt
+	syscall
+	
+
+	move	$t3, $0	# initialize t3 to outer_index = 0
+	
+	li 	$v0, 5	# reads an integer
+	syscall
+	
+	move	$t4, $v0 # N
+	addi	$t4, $t4, 1 #N+1 for correct loop termination
+	
+outer_loop:	
+
+	beq	$t3, $t4, end_outer_loop	# exit loop when index = N
+	
+	addi	$t2, $0, 1	# initialize t2 to inner_index = 0
+	addi	$t5, $0, 1	#initialize the factorial to 1
+	addiu	$t6, $t3, 1	#N+1
+	
+	inner_loop:
+	beq	$t6, $t2, end_inner_loop
+	mul	$t5, $t5, $t2
+	add	$t2, $t2, 1	# increment inner index
+	b	inner_loop
+	end_inner_loop:
+	
+	move	$a0, $t5	# print integer result
+	li	$v0, 1	# using syscall 1
+	syscall
+	
+	la 	$a0, space
+	li 	$v0, 4	# prints space
+	syscall
+	
+	add	$t3, $t3, 1	# increment outer index
+	b	outer_loop
+end_outer_loop:
+
+	li	$v0, 10 # bye bye
+	syscall	
+
+#########################################
+#					#
+#     		data segment		#
+#					#
+#########################################
+
+	.data
+prompt:	.asciiz "Enter an integer N: "
+result:	.asciiz "The factorials of integers 0 upto N are: "
+space:	.asciiz " "
+
+##
+## end of lab1(2).asm
